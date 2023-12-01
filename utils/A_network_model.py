@@ -29,15 +29,15 @@ def create_conv_autoencoder_with_skip_connections():
     bconv1 = Conv2D(128, (3, 3), activation='leaky_relu', padding='same')(up1)
     bconv1 = Dropout(0.3)(bconv1)
     bconv1 = Conv2D(128, (3, 3), activation='leaky_relu', padding='same')(bconv1)
-    bconv1 = concatenate([bconv1, conv3], axis=-1)
     bconv1 = BatchNormalization()(bconv1)
+    bconv1 = concatenate([bconv1, conv3], axis=-1)
 
     up2 = UpSampling2D(size=(2, 2))(bconv1)
     bconv2 = Conv2D(64, (3, 3), activation='leaky_relu', padding='same')(up2)
     # bconv2 = Dropout(0.3)(bconv2)
     bconv2 = Conv2D(64, (3, 3), activation='leaky_relu', padding='same')(bconv2)
-    bconv2 = concatenate([bconv2, conv2], axis=-1)
     bconv2 = BatchNormalization()(bconv2)
+    bconv2 = concatenate([bconv2, conv2], axis=-1)
 
     up3 = UpSampling2D(size=(2, 2))(bconv2)
     bconv3 = Conv2D(32, (3, 3), activation='leaky_relu', padding='same')(up3)

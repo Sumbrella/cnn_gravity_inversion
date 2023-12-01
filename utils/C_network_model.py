@@ -90,5 +90,7 @@ def create_conv_autoencoder_with_skip_connections():
     return model
 
 #
-# model = create_conv_autoencoder_with_skip_connections()
-# model.summary()
+# autoencoder_with_skip = create_conv_autoencoder_with_skip_connections()
+# # model.summary()
+# import tensorflow as tf
+# tf.keras.utils.plot_model(autoencoder_with_skip, show_shapes=True, dpi=200)

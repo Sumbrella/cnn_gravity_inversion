@@ -1,32 +1,45 @@
 from keras.models import Model
 from keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D, concatenate, BatchNormalization, Dropout
-
+import tensorflow as tf
 
 def create_conv_autoencoder_with_skip_connections():
-    input_img = Input(shape=(None, None, 3))
+    input_img = Input(shape=(64, 64, 3))
 
     # 编码器部分
-    conv1 = Conv2D(32, (3, 3), activation='leaky_relu', padding='same')(input_img)
+    conv1 = Conv2D(32, (3, 3), activation='leaky_relu', padding='same')(input_img)    
+    
     conv1 = Conv2D(32, (3, 3), activation='leaky_relu', padding='same')(conv1)
+    conv1 = Dropout(0.3)(conv1)
+    conv1 = BatchNormalization()(conv1)
+    
     pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
 
     conv2 = Conv2D(64, (3, 3), activation='leaky_relu', padding='same')(pool1)
+    conv2 = Dropout(0.3)(conv2)
+    conv2 = BatchNormalization()(conv2)
+    
     conv2 = Conv2D(64, (3, 3), activation='leaky_relu', padding='same')(conv2)
+    conv2 = BatchNormalization()(conv2)
     pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
-    pool2 = BatchNormalization()(pool2)
 
     conv3 = Conv2D(128, (3, 3), activation='leaky_relu', padding='same')(pool2)
     conv3 = Dropout(0.3)(conv3)
     conv3 = Conv2D(128, (3, 3), activation='leaky_relu', padding='same')(conv3)
+    conv3 = BatchNormalization()(conv3)
     pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
-    pool3 = BatchNormalization()(pool3)
 
     conv4 = Conv2D(256, (2, 2), activation='leaky_relu', padding='same')(pool3)
+    conv4 = Dropout(0.3)(conv4)
+    conv4 = BatchNormalization()(conv4)
+    
     conv4 = Conv2D(256, (2, 2), activation='leaky_relu', padding='same')(conv4)
+    conv4 = BatchNormalization()(conv4)
     pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
-    pool4 = BatchNormalization()(pool4)
 
     conv5 = Conv2D(512, (2, 2), activation='leaky_relu', padding='same')(conv4)
+    conv5 = Dropout(0.3)(conv5)
+    conv5 = BatchNormalization()(conv5)
+    
     conv6 = Conv2D(512, (2, 2), activation='leaky_relu', padding='same')(conv5)
     conv6 = Dropout(0.3)(conv6)
     conv6 = BatchNormalization()(conv6)
@@ -60,6 +73,8 @@ def create_conv_autoencoder_with_skip_connections():
     bconv3 = concatenate([bconv3, conv1], axis=-1)
 
     decoded = Conv2D(32, (3, 3), activation='leaky_relu', padding='same')(bconv3)
+    decoded = Dropout(0.3)(decoded)
+    decoded = BatchNormalization()(decoded)
     decoded = Conv2D(32, 1, activation='sigmoid', padding='same')(bconv3)
 
     autoencoder = Model(inputs=input_img, outputs=decoded)
@@ -68,8 +83,9 @@ def create_conv_autoencoder_with_skip_connections():
 
 # #
 # # 构建模型
-autoencoder_with_skip = create_conv_autoencoder_with_skip_connections()
-# #
-# # 查看模型概要
-autoencoder_with_skip.summary()
+# autoencoder_with_skip = create_conv_autoencoder_with_skip_connections()
+# # #
+# # # 查看模型概要
+# tf.keras.utils.plot_model(autoencoder_with_skip, show_shapes=True, dpi=200)
+# autoencoder_with_skip.summary()
 
